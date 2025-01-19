@@ -1,8 +1,6 @@
-# pyright: reportAny=false, reportExplicitAny=false
-
 import logging
 from enum import Enum
-from typing import Any, TypedDict, cast, override
+from typing import TypedDict, cast, override
 
 import discord
 from discord.ext import commands
@@ -21,7 +19,10 @@ class KaraokeFlags(Enum):
     FILTER_WIDTH = "3"
 
 
-class LevelView(BaseCustomModal[int]):
+CustomModalT = BaseCustomModal[int]
+
+
+class LevelView(CustomModalT):
     def __init__(self, title: str):
         super().__init__(title)
         self.add_item(
@@ -31,7 +32,7 @@ class LevelView(BaseCustomModal[int]):
         )
 
 
-class MonoLevelView(BaseCustomModal[int]):
+class MonoLevelView(CustomModalT):
     def __init__(self, title: str):
         super().__init__(title)
         self.add_item(
@@ -44,7 +45,7 @@ class MonoLevelView(BaseCustomModal[int]):
         )
 
 
-class FilterBandView(BaseCustomModal[int]):
+class FilterBandView(CustomModalT):
     def __init__(self, title: str):
         super().__init__(title)
         self.add_item(
@@ -57,7 +58,7 @@ class FilterBandView(BaseCustomModal[int]):
         )
 
 
-class FilterWidthView(BaseCustomModal[int]):
+class FilterWidthView(CustomModalT):
     def __init__(self, title: str):
         super().__init__(title)
         self.add_item(
@@ -71,7 +72,7 @@ class FilterWidthView(BaseCustomModal[int]):
 
 
 class OptionsType(TypedDict):
-    view_class: type[BaseCustomModal[int | str | None]]
+    view_class: type[CustomModalT]
     title: str
     description: str
     message: str
@@ -115,7 +116,7 @@ class KaraokeSettingDropdown(CustomDropdown):
             label="Filter Width", value=str(KaraokeFlags.FILTER_WIDTH.value)
         )
 
-        self._modal: BaseCustomModal[int | str | None] | None = None
+        self._modal: CustomModalT | None = None
         self._output_message: str | None = None
 
     def get_selected_flag(self) -> KaraokeFlags:
@@ -131,7 +132,7 @@ class KaraokeSettingDropdown(CustomDropdown):
         return self._output_message
 
     @property
-    def input_value(self) -> Any:
+    def input_value(self):
         if not self._modal:
             return None
         return self._modal.value
@@ -164,7 +165,7 @@ class KaraokeSettingView(BaseView):
 
     @override
     def get_dropdown(self) -> KaraokeSettingDropdown:
-        return cast(KaraokeSettingDropdown, self.children[0])  # type: ignore
+        return cast(KaraokeSettingDropdown, self.children[0])
 
 
 async def make(ctx: commands.Context[Nameless], message: discord.Message):
