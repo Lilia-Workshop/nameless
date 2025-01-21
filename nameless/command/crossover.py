@@ -1,5 +1,6 @@
 import contextlib
 import logging
+from typing import cast
 
 import discord
 import discord.ui
@@ -7,6 +8,8 @@ from discord.ext import commands
 from prisma.models import CrossChatConnection, CrossChatMessage, CrossChatRoom
 
 from nameless import Nameless
+from nameless.config import nameless_config
+from nameless.custom.cache import nameless_cache
 from nameless.custom.prisma import NamelessPrisma
 from nameless.custom.types import NamelessTextable
 
@@ -16,6 +19,12 @@ __all__ = ["CrossOverCommand"]
 class CrossOverCommand(commands.Cog):
     def __init__(self, bot: Nameless):
         self.bot: Nameless = bot
+
+    def _create_guild_channel_cache_key(
+        self, this_guild: discord.Guild, this_channel: NamelessTextable
+    ) -> str:
+        """Create (guild,channel) cache key."""
+        return f"({this_guild.id},{this_channel.id})"
 
     async def _get_subscribed_channels(
         self, this_guild: discord.Guild, this_channel: NamelessTextable
@@ -94,7 +103,12 @@ class CrossOverCommand(commands.Cog):
         that_guild: discord.Guild,
         that_channel: NamelessTextable,
     ) -> bool:
-        """Return if the 2 rooms are connected."""
+        """
+        Return if the 2 rooms are connected.
+
+        A room consisting of (guild, channel) can be used interchangably,
+        as long as the "room" is still valid.
+        """
         conn1 = await CrossChatConnection.prisma().find_first(
             where={
                 "SourceGuildId": this_guild.id,
@@ -121,16 +135,31 @@ class CrossOverCommand(commands.Cog):
         assert message.channel is not None
         assert self.bot.user is not None
 
-        if message.author.id == self.bot.user.id:
-            return
-
-        if len(message.content) == 0:
-            return
-
         if not isinstance(message.channel, NamelessTextable):
             return
 
+        cache_key = self._create_guild_channel_cache_key(message.guild, message.channel)
+
+        # We ignore:
+        # - Message from nameless* itself.
+        # - Message without a content.
+        # - Actual commands.
+        # - (Guild, Channel) not in cache.
+        if (
+            message.author.id == self.bot.user.id
+            or len(message.content) == 0
+            or any(
+                self.bot.get_command(message.content.replace(prefix, "")) is not None
+                for prefix in cast(list[str], nameless_config["command"]["prefixes"])
+            )
+            or not nameless_cache.get_key(cache_key)
+        ):
+            return
+
         for conn, channel in await self._get_subscribed_channels(message.guild, message.channel):
+            # Fail-safe
+            nameless_cache.set_key(cache_key)
+
             embed = discord.Embed(description=message.content, color=discord.Colour.orange())
 
             avatar_url = message.author.avatar.url if message.author.avatar else ""
@@ -286,7 +315,7 @@ class CrossOverCommand(commands.Cog):
             }
         )
 
-        await this_channel.send("Linking success!")
+        await ctx.send("Linking success!")
 
         await CrossChatConnection.prisma().create(
             data={
@@ -303,6 +332,12 @@ class CrossOverCommand(commands.Cog):
         await that_channel.send(
             f"New connection comes from `#{this_channel.name}` at `{this_guild.name}`!"
         )
+
+        this_cache_key = self._create_guild_channel_cache_key(this_guild, this_channel)
+        that_cache_key = self._create_guild_channel_cache_key(that_guild, that_channel)
+
+        nameless_cache.set_key(this_cache_key)
+        nameless_cache.set_key(that_cache_key)
 
     @crossover.command()
     @commands.guild_only()
@@ -357,16 +392,23 @@ class CrossOverCommand(commands.Cog):
             }
         )
 
-        await this_channel.send("Disconnection success!")
+        await ctx.send("Disconnection success!")
 
         assert isinstance(this_channel.name, str)
 
         await that_channel.send(f"Disconnected from `#{this_channel.name}` at `{this_guild.name}`!")
 
+        this_cache_key = self._create_guild_channel_cache_key(this_guild, this_channel)
+        that_cache_key = self._create_guild_channel_cache_key(that_guild, that_channel)
+
+        nameless_cache.invalidate_key(this_cache_key)
+        nameless_cache.invalidate_key(that_cache_key)
+
     @crossover.command()
     @commands.guild_only()
     @commands.has_guild_permissions(manage_guild=True)
     async def list(self, ctx: commands.Context[Nameless]):
+        """List all connected rooms."""
         await ctx.defer()
 
         assert ctx.guild is not None

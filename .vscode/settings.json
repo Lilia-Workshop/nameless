@@ -8,6 +8,7 @@
         "**/__pycache__/": true,
         "**/.ruff_cache/": true,
         "nameless.sqlite": true,
+        "nameless.cache": true,
         "nameless/command/__init__.py": true,
         "package.json": true
     }

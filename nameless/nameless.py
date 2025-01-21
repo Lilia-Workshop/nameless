@@ -10,7 +10,8 @@ from discord import ActivityType, Permissions
 from discord.ext import commands
 
 from nameless.config import nameless_config
-from nameless.custom import NamelessPrisma
+from nameless.custom.cache import nameless_cache
+from nameless.custom.prisma import NamelessPrisma
 
 __all__ = ["Nameless"]
 
@@ -40,10 +41,8 @@ class Nameless(commands.Bot):
 
     @override
     async def setup_hook(self):
-        logging.info("Connecting to database.")
         await NamelessPrisma.init()
-
-        logging.info("Registering commands.")
+        nameless_cache.populate_from_persistence()
         await self._register_commands()
 
         logging.info("Syncing commands.")
@@ -70,8 +69,8 @@ class Nameless(commands.Bot):
     async def close(self):
         logging.warning("Shutting down...")
         await NamelessPrisma.dispose()
+        nameless_cache.yank_to_persitence()
         await super().close()
-        exit(0)
 
     @staticmethod
     def get_needed_permissions() -> Permissions:
@@ -100,6 +99,8 @@ class Nameless(commands.Bot):
 
     async def _register_commands(self):
         """Registers all available commands."""
+
+        logging.info("Registering commands.")
 
         # We get ones that end in .py, in `command` directory.
         # And ignore ones that starts with _ (underscore)
