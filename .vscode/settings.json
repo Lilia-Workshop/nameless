@@ -1,7 +1,7 @@
 {
     "python.languageServer": "None",
     "basedpyright.analysis.diagnosticMode": "workspace",
-    "basedpyright.analysis.inlayHints.functionReturnTypes": false,
+    "basedpyright.disableOrganizeImports": true,
     "files.exclude": {
         "**/.venv/": true,
         "**/venv/": true,
