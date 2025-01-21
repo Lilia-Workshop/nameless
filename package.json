@@ -1,0 +1,5 @@
+{
+    "prisma": {
+        "schema": "nameless/prisma/schema.prisma"
+    }
+}
