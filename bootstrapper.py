@@ -1,13 +1,13 @@
 import logging
 import os
-import sys
 
 import discord
 from discord.ext.commands import when_mentioned_or
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 
 from nameless import Nameless
 
+find_dotenv(raise_error_if_not_found=True)
 load_dotenv()
 
 is_debug: bool = bool(int(os.getenv("DEBUG", 0)))
