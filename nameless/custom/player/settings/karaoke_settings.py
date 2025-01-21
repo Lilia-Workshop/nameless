@@ -1,8 +1,11 @@
+# pyright: reportCallIssue=false
+
 import logging
 from enum import Enum
 from typing import TypedDict, cast, override
 
 import discord
+import wavelink
 from discord.ext import commands
 
 from nameless import Nameless
@@ -30,6 +33,20 @@ class LevelView(CustomModalT):
                 label="Level", custom_id="level_input", default="0", convert=int
             )
         )
+
+    @override
+    async def on_submit(self, interaction: discord.Interaction[discord.Client]):
+        assert interaction.guild
+
+        await super().on_submit(interaction)
+        await interaction.followup.send(f"Level set to {self.value}", ephemeral=True)
+
+        voice_client = cast(wavelink.Player, interaction.guild.voice_client)
+        filters = wavelink.Filters()
+        filters.karaoke.set(
+            level=self.value, mono_level=0, filter_band=0, filter_width=0
+        )
+        await voice_client.set_filters(filters)
 
 
 class MonoLevelView(CustomModalT):
@@ -134,7 +151,7 @@ class KaraokeSettingDropdown(CustomDropdown):
     @property
     def input_value(self):
         if not self._modal:
-            return None
+            return 0
         return self._modal.value
 
     @override
@@ -169,33 +186,37 @@ class KaraokeSettingView(BaseView):
 
 
 async def make(ctx: commands.Context[Nameless], message: discord.Message):
-    embed = (
-        discord.Embed(
-            title="Karaoke Settings",
-            description="Select a setting to change",
-            color=discord.Color.blurple(),
-        )
-        .add_field(
-            name="Level", value="Change the level of the karaoke effect", inline=False
-        )
-        .add_field(
-            name="Mono Level",
-            value="Change the mono level of the karaoke effect",
-            inline=False,
-        )
-        .add_field(
-            name="Filter Band",
-            value="Change the filter band of the karaoke effect",
-            inline=False,
-        )
-        .add_field(
-            name="Filter Width",
-            value="Change the filter width of the karaoke effect",
-            inline=False,
-        )
-    )
+    voice_client = cast(wavelink.Player, ctx.voice_client)
+    karaoke = voice_client.filters.karaoke
 
     while True:
+        embed = (
+            discord.Embed(
+                title="Karaoke Settings",
+                description="Select a setting to change",
+                color=discord.Color.blurple(),
+            )
+            .add_field(
+                name=f"Level {karaoke.payload.get('level', 0)}",
+                value="Change the level of the karaoke effect",
+                inline=False,
+            )
+            .add_field(
+                name=f"Mono Level {karaoke.payload.get('mono_level', 0)}",
+                value="Change the mono level of the karaoke effect",
+                inline=False,
+            )
+            .add_field(
+                name=f"Filter Band {karaoke.payload.get('filter_band', 0)}",
+                value="Change the filter band of the karaoke effect",
+                inline=False,
+            )
+            .add_field(
+                name=f"Filter Width {karaoke.payload.get('filter_width', 0)}",
+                value="Change the filter width of the karaoke effect",
+                inline=False,
+            )
+        )
         view = KaraokeSettingView(ctx.author, message)
         await message.edit(view=view, embed=embed)
 

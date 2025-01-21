@@ -14,6 +14,9 @@ class BaseCustomModal(Generic[V], discord.ui.Modal):
     @override
     async def on_submit(self, interaction: discord.Interaction[discord.Client]) -> None:
         await interaction.response.defer()
+        for child in self.children:
+            if isinstance(child, CustomInput):
+                await child.callback(interaction)
         self.stop()
 
     def get_input(self) -> CustomInput[V]:

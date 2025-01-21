@@ -2,7 +2,7 @@
 
 from wavelink import Player
 
-from .settings import SponsorBlockSettings
+from .settings.sponsorblock_settings import SponsorBlockSettings
 
 __all__ = ["CustomPlayer"]
 
