@@ -125,6 +125,9 @@ class CrossOverCommand(commands.Cog):
         if message.author.id == self.bot.user.id:
             return
 
+        if len(message.content) == 0:
+            return
+
         if not isinstance(message.channel, nameless_accepted_channels):
             return
 
@@ -190,6 +193,11 @@ class CrossOverCommand(commands.Cog):
         ):
             with contextlib.suppress(discord.NotFound):
                 await the_message.delete()
+
+    @commands.Cog.listener()
+    async def on_bulk_message_delete(self, messages: list[discord.Message]):
+        for message in messages:
+            await self.on_message_delete(message)
 
     @commands.hybrid_group(fallback="code")
     @commands.guild_only()
@@ -299,7 +307,66 @@ class CrossOverCommand(commands.Cog):
 
     @crossover.command()
     @commands.guild_only()
-    @commands.has_guild_permissions()
+    @commands.has_guild_permissions(manage_guild=True)
+    async def disconnect(
+        self,
+        ctx: commands.Context[Nameless],
+        room_code: str = commands.parameter(description="Room code to disconnect from."),
+    ):
+        """Remove link to another guild."""
+        await ctx.defer()
+
+        room_data: CrossChatRoom | None = await CrossChatRoom.prisma().find_first(
+            where={"Id": room_code}
+        )
+
+        if room_data is None:
+            await ctx.send("Room code does not exist!")
+            return
+
+        this_guild = ctx.guild
+        that_guild = await ctx.bot.fetch_guild(room_data.GuildId)
+
+        assert this_guild is not None
+        assert that_guild is not None
+
+        this_channel = ctx.channel
+        that_channel = await ctx.bot.fetch_channel(room_data.ChannelId)
+
+        assert this_channel is not None
+        assert that_channel is not None
+
+        if not isinstance(this_channel, nameless_accepted_channels):
+            await ctx.send("You are not inside our accepted channel type (Text/Thread).")
+            return
+
+        assert isinstance(this_channel, nameless_accepted_channels)
+        assert isinstance(that_channel, nameless_accepted_channels)
+
+        if not await self._is_connected_to_each_other(
+            this_guild, this_channel, that_guild, that_channel
+        ):
+            await ctx.send("You are not connected to this room!")
+            return
+
+        await NamelessPrisma.get_guild_entry(this_guild)
+        await NamelessPrisma.get_guild_entry(that_guild)
+
+        await CrossChatConnection.prisma().delete_many(
+            where={
+                "RoomId": room_code,
+            }
+        )
+
+        await this_channel.send("Disconnection success!")
+
+        assert isinstance(this_channel.name, str)
+
+        await that_channel.send(f"Disconnected from `#{this_channel.name}` at `{this_guild.name}`!")
+
+    @crossover.command()
+    @commands.guild_only()
+    @commands.has_guild_permissions(manage_guild=True)
     async def list(self, ctx: commands.Context[Nameless]):
         await ctx.defer()
 
