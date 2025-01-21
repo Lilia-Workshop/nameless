@@ -5,14 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Run nameless* at Release mode.",
+            "name": "Run nameless*",
             "type": "debugpy",
             "request": "launch",
             "program": "${cwd}/bootstrapper.py",
             "console": "internalConsole"
         },
         {
-            "name": "Run nameless* at Debug mode.",
+            "name": "Run nameless* with Debug logging.",
             "type": "debugpy",
             "request": "launch",
             "program": "${cwd}/bootstrapper.py",
