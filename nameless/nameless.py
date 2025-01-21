@@ -56,7 +56,7 @@ class Nameless(commands.Bot):
     def start_bot(self, *, is_debug: bool = False):
         """Starts the bot."""
         logging.info(f"This bot will now start in {'debug' if is_debug else 'production'} mode.")
-        self.run(os.getenv("TOKEN", ""), log_handler=None, root_logger=True)
+        self.run(os.getenv("TOKEN", ""), log_handler=None)
 
     @override
     async def close(self):
