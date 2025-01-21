@@ -678,17 +678,18 @@ class MusicCommands(commands.GroupCog, name="music"):
 
 async def setup(bot: Nameless):
     autostart_lavalink = False
-    if not nameless_config.get("wavelinks"):
-        nameless_config["wavelinks"] = [
-            {"uri": "http://localhost:2333", "password": "youshallnotpass"}
-        ]
-        logging.warning("No Lavalink nodes found. Added a default node.")
-        autostart_lavalink = True
 
     for node in nameless_config["wavelinks"]:
         if node.get("is_default", False) is True:
             autostart_lavalink = True
             break
+
+    if not autostart_lavalink and not nameless_config.get("wavelinks"):
+        nameless_config["wavelinks"] = [
+            {"uri": "http://localhost:2333", "password": "youshallnotpass"}
+        ]
+        logging.warning("No Lavalink nodes found. Added a default node.")
+        autostart_lavalink = True
 
     if autostart_lavalink:
         from ..custom.player.lavalink import main as lavalink_main
