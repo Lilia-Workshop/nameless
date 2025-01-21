@@ -115,4 +115,4 @@ class Nameless(commands.Bot):
             try:
                 await self.load_extension(module_name)
             except commands.ExtensionFailed as ex:
-                raise ex
+                logging.error("Command load failure.", exc_info=ex)
