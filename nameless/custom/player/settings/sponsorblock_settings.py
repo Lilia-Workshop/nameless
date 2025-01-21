@@ -9,7 +9,7 @@ from prisma.models import PlayerSettings
 from nameless import Nameless
 from nameless.custom.ui.dropdown import CustomDropdown
 
-from .base import BaseView
+from .base import BaseSettingsView
 
 
 @final
@@ -67,7 +67,7 @@ class SponsorBlockSettings:
         )
 
 
-class SettingsView(BaseView):
+class SettingsView(BaseSettingsView):
     def __init__(self, author: discord.Member | discord.User, message: discord.Message):
         super().__init__(author, message)
         self.add_item(SettingsDropdown())

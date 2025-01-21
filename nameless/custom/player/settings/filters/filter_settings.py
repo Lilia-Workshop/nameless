@@ -2,13 +2,16 @@ from enum import Enum
 from typing import cast, override
 
 import discord
+import wavelink
 from discord.ext import commands
 
 from nameless import Nameless
 from nameless.custom.ui import CustomDropdown
 
-from .base import BaseView
+from ..base import BaseSettingsView
 from .karaoke_settings import make as karaoke_make
+
+__all__ = ["make"]
 
 
 class FilterFlags(Enum):
@@ -33,7 +36,7 @@ class FilterDropdown(CustomDropdown):
         return FilterFlags(self.values[0])
 
 
-class SettingsView(BaseView):
+class SettingsView(BaseSettingsView):
     def __init__(self, author: discord.Member | discord.User, message: discord.Message):
         super().__init__(author, message)
         self.add_item(FilterDropdown())
@@ -44,6 +47,8 @@ class SettingsView(BaseView):
 
 
 async def make(ctx: commands.Context[Nameless]):
+    assert ctx.guild is not None
+
     embed = (
         discord.Embed(
             title="Filter Settings",
@@ -59,10 +64,13 @@ async def make(ctx: commands.Context[Nameless]):
         .add_field(name="Rotation", value="Change the rotation settings")
     )
 
+    voice_client = cast(wavelink.Player, ctx.guild.voice_client)
+    filters = voice_client.filters
     message = await ctx.send(embed=embed)
+
     while True:
         view = SettingsView(ctx.author, message)
-        await message.edit(view=view)
+        await message.edit(view=view, embed=embed)
 
         if await view.wait():
             await message.edit(view=None)
@@ -71,7 +79,7 @@ async def make(ctx: commands.Context[Nameless]):
         selected_flag = view.get_dropdown().get_selected_flag()
         match selected_flag:
             case FilterFlags.KARAOKE:
-                await karaoke_make(ctx, message)
+                await karaoke_make(ctx, message, filters, voice_client)
             case FilterFlags.EXIT:
                 await message.edit(view=None)
                 return

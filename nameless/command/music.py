@@ -11,7 +11,8 @@ from discord.utils import escape_markdown
 
 from ..config import nameless_config
 from ..custom.player import CustomPlayer, TrackDropdown
-from ..custom.player.settings import filter_settings, sponsorblock_settings
+from ..custom.player.settings import sponsorblock_make
+from ..custom.player.settings.filters import filter_make
 from ..custom.player.settings.sponsorblock_settings import SponsorBlockSettings
 from ..custom.ui import ViewButton, ViewMenu
 from ..nameless import Nameless
@@ -666,14 +667,14 @@ class MusicCommands(commands.GroupCog, name="music"):
     async def sponsorblock(self, ctx: commands.Context[Nameless]):
         """Settings for sponsorblock."""
         # Making a menu to control sponsorblock settings.
-        await sponsorblock_settings.make(ctx)
+        await sponsorblock_make(ctx)
 
     @commands.hybrid_command()
     @app_commands.guild_only()
     async def filter(self, ctx: commands.Context[Nameless]):
         """Settings for filters."""
         # Making a menu to control filter settings.
-        await filter_settings.make(ctx)
+        await filter_make(ctx)
 
 
 async def setup(bot: Nameless):

@@ -5,7 +5,7 @@ import discord
 from nameless.custom.ui import CustomDropdown
 
 
-class BaseView(discord.ui.View):
+class BaseSettingsView(discord.ui.View):
     def __init__(self, author: discord.Member | discord.User, message: discord.Message):
         super().__init__(timeout=30)
         self.author: discord.Member | discord.User = author
