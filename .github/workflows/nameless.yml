@@ -4,7 +4,9 @@ on:
   push:
     branches:
       - "main"
-      - "fix/**"
+  pull_request:
+    branches:
+      - "main"
       - "feat/**"
   workflow_dispatch:
 
@@ -33,19 +35,16 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install --upgrade pip
-          pip install --upgrade setuptools wheel
-          pip install -U -r requirements.txt -r requirements.dev.txt
+          pip install -r requirements.txt 
+          pip install -r requirements.dev.txt
 
       - name: Create Prisma client
         run: |
-          prisma db push --schema nameless/prisma/schema.prisma
+          prisma db push
 
       - name: Fix the code with ruff
         run: |
-          ruff check --select I --fix --exit-zero .
-          ruff check --select UP --fix --exit-zero .
-          ruff check --fix --exit-zero .
+          ruff check --exit-zero .
           ruff format .
 
       - name: Type checking with BasedPyright
