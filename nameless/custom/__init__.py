@@ -1,2 +1,2 @@
-from .crud import *
+from .prisma import *
 from .types import *
