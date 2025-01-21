@@ -8,10 +8,9 @@ from prisma.models import CrossChatConnection, CrossChatMessage, CrossChatRoom
 
 from nameless import Nameless
 from nameless.custom.crud import NamelessPrisma
+from nameless.custom.types import NamelessTextable
 
 __all__ = ["CrossOverCommand"]
-
-nameless_accepted_channels = discord.TextChannel | discord.Thread
 
 
 class CrossOverCommand(commands.Cog):
@@ -19,14 +18,14 @@ class CrossOverCommand(commands.Cog):
         self.bot: Nameless = bot
 
     async def _get_subscribed_channels(
-        self, this_guild: discord.Guild, this_channel: nameless_accepted_channels
-    ) -> list[tuple[CrossChatConnection, nameless_accepted_channels]]:
+        self, this_guild: discord.Guild, this_channel: NamelessTextable
+    ) -> list[tuple[CrossChatConnection, NamelessTextable]]:
         """Get list of subscribed guild channels."""
         connections = await CrossChatConnection.prisma().find_many(
             where={"SourceGuildId": this_guild.id, "SourceChannelId": this_channel.id}
         )
 
-        result: list[tuple[CrossChatConnection, nameless_accepted_channels]] = []
+        result: list[tuple[CrossChatConnection, NamelessTextable]] = []
 
         for conn in connections:
             guild = self.bot.get_guild(conn.TargetGuildId)
@@ -39,7 +38,7 @@ class CrossOverCommand(commands.Cog):
             if channel is None:
                 continue
 
-            if isinstance(channel, nameless_accepted_channels):
+            if isinstance(channel, NamelessTextable):
                 result.append((conn, channel))
 
         return result
@@ -47,7 +46,7 @@ class CrossOverCommand(commands.Cog):
     async def _get_subscribed_messages(
         self,
         this_guild: discord.Guild,
-        this_channel: nameless_accepted_channels,
+        this_channel: NamelessTextable,
         this_message: discord.Message,
     ) -> list[tuple[CrossChatConnection, discord.Message]]:
         """Get subscribed messages."""
@@ -73,7 +72,7 @@ class CrossOverCommand(commands.Cog):
             if channel is None:
                 continue
 
-            if not isinstance(channel, nameless_accepted_channels):
+            if not isinstance(channel, NamelessTextable):
                 continue
 
             assert conn.Messages is not None
@@ -91,9 +90,9 @@ class CrossOverCommand(commands.Cog):
     async def _is_connected_to_each_other(
         self,
         this_guild: discord.Guild,
-        this_channel: nameless_accepted_channels,
+        this_channel: NamelessTextable,
         that_guild: discord.Guild,
-        that_channel: nameless_accepted_channels,
+        that_channel: NamelessTextable,
     ) -> bool:
         """Return if the 2 rooms are connected."""
         conn1 = await CrossChatConnection.prisma().find_first(
@@ -128,7 +127,7 @@ class CrossOverCommand(commands.Cog):
         if len(message.content) == 0:
             return
 
-        if not isinstance(message.channel, nameless_accepted_channels):
+        if not isinstance(message.channel, NamelessTextable):
             return
 
         for conn, channel in await self._get_subscribed_channels(message.guild, message.channel):
@@ -165,7 +164,7 @@ class CrossOverCommand(commands.Cog):
         if message.author.id == self.bot.user.id:
             return
 
-        if not isinstance(message.channel, nameless_accepted_channels):
+        if not isinstance(message.channel, NamelessTextable):
             return
 
         for _conn, the_message in await self._get_subscribed_messages(
@@ -185,7 +184,7 @@ class CrossOverCommand(commands.Cog):
         if message.author.id == self.bot.user.id:
             return
 
-        if not isinstance(message.channel, nameless_accepted_channels):
+        if not isinstance(message.channel, NamelessTextable):
             return
 
         for _conn, the_message in await self._get_subscribed_messages(
@@ -209,7 +208,7 @@ class CrossOverCommand(commands.Cog):
         assert ctx.guild is not None
         assert ctx.channel is not None
 
-        if not isinstance(ctx.channel, nameless_accepted_channels):
+        if not isinstance(ctx.channel, NamelessTextable):
             await ctx.send("You are not inside our accepted channel type (Text/Thread).")
             return
 
@@ -257,12 +256,12 @@ class CrossOverCommand(commands.Cog):
         assert this_channel is not None
         assert that_channel is not None
 
-        if not isinstance(this_channel, nameless_accepted_channels):
+        if not isinstance(this_channel, NamelessTextable):
             await ctx.send("You are not inside our accepted channel type (Text/Thread).")
             return
 
-        assert isinstance(this_channel, nameless_accepted_channels)
-        assert isinstance(that_channel, nameless_accepted_channels)
+        assert isinstance(this_channel, NamelessTextable)
+        assert isinstance(that_channel, NamelessTextable)
 
         if await self._is_connected_to_each_other(
             this_guild, this_channel, that_guild, that_channel
@@ -336,12 +335,12 @@ class CrossOverCommand(commands.Cog):
         assert this_channel is not None
         assert that_channel is not None
 
-        if not isinstance(this_channel, nameless_accepted_channels):
+        if not isinstance(this_channel, NamelessTextable):
             await ctx.send("You are not inside our accepted channel type (Text/Thread).")
             return
 
-        assert isinstance(this_channel, nameless_accepted_channels)
-        assert isinstance(that_channel, nameless_accepted_channels)
+        assert isinstance(this_channel, NamelessTextable)
+        assert isinstance(that_channel, NamelessTextable)
 
         if not await self._is_connected_to_each_other(
             this_guild, this_channel, that_guild, that_channel
