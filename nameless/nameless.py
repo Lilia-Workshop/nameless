@@ -3,7 +3,7 @@ import os
 import re
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Callable, override
+from typing import override
 
 import discord
 from discord import ActivityType, Permissions
@@ -18,9 +18,7 @@ __all__ = ["Nameless"]
 class Nameless(commands.Bot):
     """Customized Discord instance, or so called, nameless* bot."""
 
-    def __init__(
-        self, prefix: str | list[str] | Callable[..., list[str]], *args: object, **kwargs: object
-    ):
+    def __init__(self, *args: object, **kwargs: object):
         # Downcasting because duck typed is a b*tch
         _description: str = nameless_config["nameless"]["description"]
 
@@ -28,7 +26,17 @@ class Nameless(commands.Bot):
         _intents.message_content = True
         _intents.members = True
 
-        super().__init__(prefix, *args, intents=_intents, description=_description, **kwargs)
+        _prefixes: list[str] = nameless_config["command"]["prefixes"]
+        _prefixes.append("nl.")
+        _prefixes = [*set(_prefixes)]
+
+        super().__init__(
+            commands.when_mentioned_or(*_prefixes),
+            *args,
+            intents=_intents,
+            description=_description,
+            **kwargs,
+        )
 
     @override
     async def setup_hook(self):
