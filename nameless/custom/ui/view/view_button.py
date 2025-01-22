@@ -4,7 +4,7 @@ from discord import ui
 from discord.ui import Button
 from typing_extensions import override
 
-from .base import BaseView
+from nameless.custom.ui.view.base import BaseView
 
 __all__ = ["ViewButton"]
 

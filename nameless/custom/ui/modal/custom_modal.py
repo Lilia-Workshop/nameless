@@ -2,7 +2,7 @@ from typing import Generic, TypeVar, override
 
 import discord
 
-from .custom_input import CustomInput
+from nameless.custom.ui.modal.custom_input import CustomInput
 
 V = TypeVar("V", bound=type, covariant=True)
 

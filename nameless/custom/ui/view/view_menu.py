@@ -6,8 +6,7 @@ from discord.ext import commands
 from discord.ui import Button
 
 from nameless import Nameless
-
-from .base import BaseView
+from nameless.custom.ui.view.base import BaseView
 
 __all__ = ["ViewMenu"]
 
