@@ -3,7 +3,7 @@ import os
 import re
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import override
+from typing import Self, override
 
 import discord
 from discord import ActivityType, Permissions
@@ -62,6 +62,16 @@ class Nameless(commands.Bot):
 
         logging.info("nameless* is now operational!")
         nameless_config["nameless"]["start_time"] = datetime.now(timezone.utc)
+
+    @override
+    async def on_command_error(
+        self, ctx: commands.Context[Self], ex: commands.errors.CommandError
+    ):
+        await ctx.send(
+            "Something went wrong during command execution, "
+            + "please notify us on GitHub issue if needed."
+        )
+        logging.error("Something went wrong.", exc_info=ex)
 
     def start_bot(self, *, is_debug: bool = False):
         """Start the bot."""
