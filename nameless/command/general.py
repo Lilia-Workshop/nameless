@@ -17,14 +17,15 @@ class GeneralCommand(commands.Cog):
         pass
 
     @commands.hybrid_command()
-    async def user(
-        self,
-        ctx: commands.Context[Nameless],
-        member: discord.Member | None = commands.parameter(
-            description="Target member, defaults to you."
-        ),
-    ):
-        """View someone's information."""
+    async def user(self, ctx: commands.Context[Nameless], member: discord.Member | None):
+        """View someone's information.
+
+        Parameters
+        ----------
+        member: discord.Member | None
+            Member to look up, defaults to you.
+
+        """
         await ctx.defer()
 
         member = member if member else cast(discord.Member, ctx.author)
@@ -59,7 +60,7 @@ class GeneralCommand(commands.Cog):
     @commands.hybrid_command()
     @commands.guild_only()
     async def guild(self, ctx: commands.Context[Nameless]):
-        """View this guild's information"""
+        """View this guild's information."""
         await ctx.defer()
 
         guild = ctx.guild
@@ -110,7 +111,7 @@ class GeneralCommand(commands.Cog):
 
     @commands.hybrid_command()
     async def nameless(self, ctx: commands.Context[Nameless]):
-        """So, you would like to know me?"""
+        """So, you would like to know me? Sure, here you go."""
         await ctx.defer()
 
         assert ctx.bot.application is not None

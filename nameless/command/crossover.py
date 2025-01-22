@@ -5,13 +5,13 @@ from typing import cast
 import discord
 import discord.ui
 from discord.ext import commands
-from prisma.models import CrossChatConnection, CrossChatMessage, CrossChatRoom
 
 from nameless import Nameless
 from nameless.config import nameless_config
 from nameless.custom.cache import nameless_cache
 from nameless.custom.prisma import NamelessPrisma
 from nameless.custom.types import NamelessTextable
+from prisma.models import CrossChatConnection, CrossChatMessage, CrossChatRoom
 
 __all__ = ["CrossOverCommand"]
 
@@ -260,9 +260,16 @@ class CrossOverCommand(commands.Cog):
     async def connect(
         self,
         ctx: commands.Context[Nameless],
-        room_code: str = commands.parameter(description="Room code to connect to."),
+        room_code: str,
     ):
-        """Create link to another guild."""
+        """
+        Connect to other room.
+
+        Parameters
+        ----------
+        room_code: str
+            Room code to connect to.
+        """
         await ctx.defer()
 
         room_data: CrossChatRoom | None = await CrossChatRoom.prisma().find_first(
@@ -345,9 +352,16 @@ class CrossOverCommand(commands.Cog):
     async def disconnect(
         self,
         ctx: commands.Context[Nameless],
-        room_code: str = commands.parameter(description="Room code to disconnect from."),
+        room_code: str,
     ):
-        """Remove link to another guild."""
+        """
+        Disconnect from other room.
+
+        Parameters
+        ----------
+        room_code: str
+            Room code to disconnect from.
+        """
         await ctx.defer()
 
         room_data: CrossChatRoom | None = await CrossChatRoom.prisma().find_first(
@@ -408,7 +422,7 @@ class CrossOverCommand(commands.Cog):
     @commands.guild_only()
     @commands.has_guild_permissions(manage_guild=True)
     async def list(self, ctx: commands.Context[Nameless]):
-        """List all connected rooms."""
+        """List connected rooms."""
         await ctx.defer()
 
         assert ctx.guild is not None
