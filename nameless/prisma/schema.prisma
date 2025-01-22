@@ -9,7 +9,8 @@ generator client {
 }
 
 model User {
-  Id BigInt @id
+  Id               BigInt @id
+  MaimaiFriendCode BigInt
 }
 
 model Guild {
