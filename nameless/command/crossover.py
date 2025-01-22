@@ -9,6 +9,7 @@ from nameless import Nameless
 from nameless.custom.cache import nameless_cache
 from nameless.custom.prisma import NamelessPrisma
 from nameless.custom.types import NamelessTextable
+from nameless.utils import create_cache_key
 from prisma.models import CrossChatConnection, CrossChatMessage, CrossChatRoom
 
 __all__ = ["CrossOverCommand"]
@@ -22,7 +23,7 @@ class CrossOverCommand(commands.Cog):
         self, this_guild: discord.Guild, this_channel: NamelessTextable
     ) -> str:
         """Create (guild,channel) cache key."""
-        return f"({this_guild.id},{this_channel.id})"
+        return create_cache_key("crossover", str(this_guild.id), str(this_channel.id))
 
     async def _get_subscribed_channels(
         self, this_guild: discord.Guild, this_channel: NamelessTextable
