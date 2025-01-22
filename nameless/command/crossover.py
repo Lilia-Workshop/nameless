@@ -129,7 +129,7 @@ class CrossOverCommand(commands.Cog):
             }
         )
 
-        return not (conn1 is None and conn2 is None)
+        return conn1 is not None and conn2 is not None
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -377,22 +377,31 @@ class CrossOverCommand(commands.Cog):
         """
         await ctx.defer()
 
-        room_data: CrossChatRoom | None = await CrossChatRoom.prisma().find_first(
-            where={"Id": room_code}
+        assert ctx.guild is not None
+        assert ctx.channel is not None
+
+        conn_data: (
+            CrossChatConnection | None
+        ) = await CrossChatConnection.prisma().find_first(
+            where={
+                "RoomId": room_code,
+                "SourceGuildId": ctx.guild.id,
+                "SourceChannelId": ctx.channel.id,
+            }
         )
 
-        if room_data is None:
+        if conn_data is None:
             await ctx.send("Room code does not exist!")
             return
 
         this_guild = ctx.guild
-        that_guild = await ctx.bot.fetch_guild(room_data.GuildId)
+        that_guild = await ctx.bot.fetch_guild(conn_data.TargetGuildId)
 
         assert this_guild is not None
         assert that_guild is not None
 
         this_channel = ctx.channel
-        that_channel = await ctx.bot.fetch_channel(room_data.ChannelId)
+        that_channel = await ctx.bot.fetch_channel(conn_data.TargetChannelId)
 
         assert this_channel is not None
         assert that_channel is not None
