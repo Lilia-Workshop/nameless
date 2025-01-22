@@ -141,6 +141,7 @@ class CrossOverCommand(commands.Cog):
             return
 
         cache_key = self._create_guild_channel_cache_key(message.guild, message.channel)
+        prefix_list: list[str] = self.bot.get_prefix_list()
 
         # We ignore:
         # - Message from nameless* itself.
@@ -150,10 +151,7 @@ class CrossOverCommand(commands.Cog):
         if (
             message.author.id == self.bot.user.id
             or len(message.content) == 0
-            or any(
-                self.bot.get_command(message.content.replace(prefix, "")) is not None
-                for prefix in cast(list[str], nameless_config["command"]["prefixes"])
-            )
+            or any(message.content.startswith(prefix) for prefix in prefix_list)
             or not nameless_cache.get_key(cache_key)
         ):
             return

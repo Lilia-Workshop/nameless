@@ -119,3 +119,14 @@ class Nameless(commands.Bot):
                 await self.load_extension(module_name)
             except commands.ExtensionFailed as ex:
                 logging.error("Command load failure.", exc_info=ex)
+
+    def get_prefix_list(self) -> list[str]:
+        """Get prefix list."""
+        assert self.user is not None
+
+        _prefixes: list[str] = nameless_config["command"]["prefixes"]
+        _prefixes.append("nl.")
+        _prefixes.append(self.user.mention)
+        _prefixes = [*set(_prefixes)]
+
+        return _prefixes
