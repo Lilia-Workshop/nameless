@@ -1,13 +1,11 @@
 import contextlib
 import logging
-from typing import cast
 
 import discord
 import discord.ui
 from discord.ext import commands
 
 from nameless import Nameless
-from nameless.config import nameless_config
 from nameless.custom.cache import nameless_cache
 from nameless.custom.prisma import NamelessPrisma
 from nameless.custom.types import NamelessTextable
@@ -453,14 +451,19 @@ class CrossOverCommand(commands.Cog):
         assert ctx.channel is not None
 
         connections = await CrossChatConnection.prisma().find_many(
-            where={
-                "OR": [
-                    {"SourceGuildId": ctx.guild.id, "SourceChannelId": ctx.channel.id},
-                    {"TargetGuildId": ctx.guild.id, "TargetChannelId": ctx.channel.id},
-                ]
-            },
+            where={"SourceGuildId": ctx.guild.id, "SourceChannelId": ctx.channel.id},
             distinct=["RoomId"],
         )
+
+        rooms: list[str] = []
+
+        for conn in connections:
+            that_guild = await ctx.bot.fetch_guild(conn.TargetGuildId)
+            that_channel = await that_guild.fetch_channel(conn.TargetChannelId)
+
+            rooms.append(
+                f"`{conn.RoomId}` : `#{that_channel.name}` @ `{that_guild.name}`"
+            )
 
         embed = discord.Embed(
             description="All available connections, both in/outbound!",
@@ -468,10 +471,8 @@ class CrossOverCommand(commands.Cog):
             title="Connection list",
         )
 
-        rooms: list[str] = [conn.RoomId for conn in connections]
-
         embed.set_thumbnail(url=ctx.guild.icon.url if ctx.guild.icon else "")
-        embed.add_field(name="All connected rooms", value=f"`{'\n'.join(rooms)}`")
+        embed.add_field(name="All connected rooms", value="\n".join(rooms))
 
         await ctx.send(
             embed=embed,
