@@ -39,7 +39,9 @@ class OwnerCommand(commands.Cog):
         """Reload all loaded commands."""
         await ctx.defer()
 
-        for ext in ctx.bot.extensions:
+        loaded_extensions = dict(ctx.bot.extensions).copy()
+
+        for ext in loaded_extensions:
             await ctx.bot.reload_extension(ext)
             logging.info(f"Done reloading {ext}")
 
