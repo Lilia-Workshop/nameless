@@ -12,16 +12,21 @@ typeCheckingMode = "recommended"
 line-length = 100
 indent-width = 4
 fix = true
+src = ["nameless"]
 
 [tool.ruff.format]
 indent-style = "space"
 
 [tool.ruff.lint]
-select = ["E", "F", "UP", "B", "SIM", "I", "Q"]
+select = ["E", "F", "UP", "B", "SIM", "I", "Q", "TID", "D"]
+ignore = ["D1", "D417"]
 
 [tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F403"]
+"__init__.py" = ["F403", "TID252"]
 "*" = ["B008", "F401", "F821", "F841"]
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
