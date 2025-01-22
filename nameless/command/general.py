@@ -17,7 +17,9 @@ class GeneralCommand(commands.Cog):
         pass
 
     @commands.hybrid_command()
-    async def user(self, ctx: commands.Context[Nameless], member: discord.Member | None):
+    async def user(
+        self, ctx: commands.Context[Nameless], member: discord.Member | None
+    ):
         """View someone's information.
 
         Parameters
@@ -35,7 +37,9 @@ class GeneralCommand(commands.Cog):
 
         assert join_date is not None
 
-        flags = [flag.replace("_", " ").title() for flag, has in member.public_flags if has]
+        flags = [
+            flag.replace("_", " ").title() for flag, has in member.public_flags if has
+        ]
         embed: discord.Embed = (
             discord.Embed(
                 description=f"Public handle: `@{member.name}`",
@@ -51,8 +55,14 @@ class GeneralCommand(commands.Cog):
                 name="📆 Account created since",
                 value=f"<t:{int(account_create_date.timestamp())}:R>",
             )
-            .add_field(name="🤝 Membership since", value=f"<t:{int(join_date.timestamp())}:R>")
-            .add_field(name="🌟 Badges", value=", ".join(flags) if flags else "None", inline=False)
+            .add_field(
+                name="🤝 Membership since", value=f"<t:{int(join_date.timestamp())}:R>"
+            )
+            .add_field(
+                name="🌟 Badges",
+                value=", ".join(flags) if flags else "None",
+                inline=False,
+            )
         )
 
         await ctx.send(embed=embed)
@@ -90,7 +100,10 @@ class GeneralCommand(commands.Cog):
             )
             .set_thumbnail(url=guild.icon.url if guild.icon else "")
             .add_field(name="ℹ️ Guild ID", value=f"{guild.id}")
-            .add_field(name="⏰ Creation date", value=f"<t:{int(guild_create_date.timestamp())}:f>")
+            .add_field(
+                name="⏰ Creation date",
+                value=f"<t:{int(guild_create_date.timestamp())}:f>",
+            )
             .add_field(
                 name=f"👋 Headcount: {total_count}",
                 value=f"BOT: {bots_count}, Human: {humans_count}",
@@ -98,7 +111,8 @@ class GeneralCommand(commands.Cog):
             .add_field(
                 name="💬 Channels",
                 value=(
-                    f"{len(guild.channels)} channel(s) - " + f"{public_threads_count} thread(s)"
+                    f"{len(guild.channels)} channel(s) - "
+                    + f"{public_threads_count} thread(s)"
                 ),
             )
             .add_field(name="⭐ Roles", value=f"{len(guild.roles)}")
@@ -141,17 +155,23 @@ class GeneralCommand(commands.Cog):
             .add_field(name="⭐ Biography", value=ctx.bot.description, inline=False)
             .add_field(
                 name="🫡 Service status",
-                value=(f"Serving {servers_count} servers " + f"and {total_members_count} users."),
+                value=(
+                    f"Serving {servers_count} servers "
+                    + f"and {total_members_count} users."
+                ),
                 inline=False,
             )
             .add_field(
-                name="👋 Online since", value=f"<t:{uptime}:F> (<t:{uptime}:R>)", inline=False
+                name="👋 Online since",
+                value=f"<t:{uptime}:F> (<t:{uptime}:R>)",
+                inline=False,
             )
             .add_field(name="ℹ️ Version", value=nameless_config["nameless"]["version"])
             .add_field(
                 name="💻 Runtime",
                 value=(
-                    f"**discord.py {discord.__version__}** " + f"on **Python {python_version()}**"
+                    f"**discord.py {discord.__version__}** "
+                    + f"on **Python {python_version()}**"
                 ),
             )
         )
@@ -161,7 +181,10 @@ class GeneralCommand(commands.Cog):
         if ctx.bot.application.bot_public:
             buttons.add_item(
                 discord.ui.Button(
-                    label="Invite me!", style=discord.ButtonStyle.url, url=bot_inv, emoji="😳"
+                    label="Invite me!",
+                    style=discord.ButtonStyle.url,
+                    url=bot_inv,
+                    emoji="😳",
                 )
             )
 

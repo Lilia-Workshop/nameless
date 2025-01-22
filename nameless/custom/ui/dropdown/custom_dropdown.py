@@ -72,6 +72,10 @@ class CustomDropdown(ui.Select[ui.View]):
         default: bool = False,
     ):
         self.add_option(
-            label=label, value=value, description=description, emoji=emoji, default=default
+            label=label,
+            value=value,
+            description=description,
+            emoji=emoji,
+            default=default,
         )
         return self

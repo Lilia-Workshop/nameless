@@ -9,7 +9,7 @@ reportCallInDefaultInitializer = "none"
 typeCheckingMode = "recommended"
 
 [tool.ruff]
-line-length = 100
+line-length = 88
 indent-width = 4
 fix = true
 src = ["nameless"]

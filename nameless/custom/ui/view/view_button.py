@@ -90,7 +90,13 @@ class ViewButton(Button[BaseView]):
         **kwargs,
     ):
         return cls.create_button(
-            "Back", cls.PREVIOUS_PAGE_ID, "⬅️", with_label, with_emote, with_disabled, **kwargs
+            "Back",
+            cls.PREVIOUS_PAGE_ID,
+            "⬅️",
+            with_label,
+            with_emote,
+            with_disabled,
+            **kwargs,
         )
 
     @classmethod
@@ -102,7 +108,13 @@ class ViewButton(Button[BaseView]):
         **kwargs,
     ):
         return cls.create_button(
-            "Next", cls.NEXT_PAGE_ID, "➡️", with_label, with_emote, with_disabled, **kwargs
+            "Next",
+            cls.NEXT_PAGE_ID,
+            "➡️",
+            with_label,
+            with_emote,
+            with_disabled,
+            **kwargs,
         )
 
     @classmethod

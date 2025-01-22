@@ -87,7 +87,9 @@ class CrossOverCommand(commands.Cog):
             assert conn.Messages is not None
 
             the_true_id: int = [
-                x.ClonedMessageId for x in conn.Messages if x.OriginMessageId == this_message.id
+                x.ClonedMessageId
+                for x in conn.Messages
+                if x.OriginMessageId == this_message.id
             ][0]
 
             the_true_message = await channel.fetch_message(the_true_id)
@@ -156,18 +158,25 @@ class CrossOverCommand(commands.Cog):
         ):
             return
 
-        for conn, channel in await self._get_subscribed_channels(message.guild, message.channel):
+        for conn, channel in await self._get_subscribed_channels(
+            message.guild, message.channel
+        ):
             # Fail-safe
             nameless_cache.set_key(cache_key)
 
-            embed = discord.Embed(description=message.content, color=discord.Colour.orange())
+            embed = discord.Embed(
+                description=message.content, color=discord.Colour.orange()
+            )
 
             avatar_url = message.author.avatar.url if message.author.avatar else ""
             guild_icon = message.guild.icon.url if message.guild.icon else ""
 
-            embed.set_author(name=f"@{message.author.global_name} wrote:", icon_url=avatar_url)
+            embed.set_author(
+                name=f"@{message.author.global_name} wrote:", icon_url=avatar_url
+            )
             embed.set_footer(
-                text=f"{message.guild.name} at #{message.channel.name}", icon_url=guild_icon
+                text=f"{message.guild.name} at #{message.channel.name}",
+                icon_url=guild_icon,
             )
 
             sent_message = await channel.send(
@@ -238,7 +247,9 @@ class CrossOverCommand(commands.Cog):
         assert ctx.channel is not None
 
         if not isinstance(ctx.channel, NamelessTextable):
-            await ctx.send("You are not inside our accepted channel type (Text/Thread).")
+            await ctx.send(
+                "You are not inside our accepted channel type (Text/Thread)."
+            )
             return
 
         await NamelessPrisma.get_guild_entry(ctx.guild)
@@ -293,7 +304,9 @@ class CrossOverCommand(commands.Cog):
         assert that_channel is not None
 
         if not isinstance(this_channel, NamelessTextable):
-            await ctx.send("You are not inside our accepted channel type (Text/Thread).")
+            await ctx.send(
+                "You are not inside our accepted channel type (Text/Thread)."
+            )
             return
 
         assert isinstance(this_channel, NamelessTextable)
@@ -385,7 +398,9 @@ class CrossOverCommand(commands.Cog):
         assert that_channel is not None
 
         if not isinstance(this_channel, NamelessTextable):
-            await ctx.send("You are not inside our accepted channel type (Text/Thread).")
+            await ctx.send(
+                "You are not inside our accepted channel type (Text/Thread)."
+            )
             return
 
         assert isinstance(this_channel, NamelessTextable)
@@ -410,7 +425,9 @@ class CrossOverCommand(commands.Cog):
 
         assert isinstance(this_channel.name, str)
 
-        await that_channel.send(f"Disconnected from `#{this_channel.name}` at `{this_guild.name}`!")
+        await that_channel.send(
+            f"Disconnected from `#{this_channel.name}` at `{this_guild.name}`!"
+        )
 
         this_cache_key = self._create_guild_channel_cache_key(this_guild, this_channel)
         that_cache_key = self._create_guild_channel_cache_key(that_guild, that_channel)

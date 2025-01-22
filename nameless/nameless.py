@@ -62,7 +62,9 @@ class Nameless(commands.Bot):
 
     def start_bot(self, *, is_debug: bool = False):
         """Start the bot."""
-        logging.info(f"This bot will now start in {'debug' if is_debug else 'production'} mode.")
+        logging.info(
+            f"This bot will now start in {'debug' if is_debug else 'production'} mode."
+        )
         self.run(os.getenv("TOKEN", ""), log_handler=None)
 
     @override
@@ -105,7 +107,9 @@ class Nameless(commands.Bot):
         # And ignore ones that starts with _ (underscore)
         current_path = Path(__file__).parent
         py_file_re = re.compile(r"^(?!_.*)(\w.*).py")
-        available_files = [*filter(py_file_re.match, os.listdir(current_path / "command"))]
+        available_files = [
+            *filter(py_file_re.match, os.listdir(current_path / "command"))
+        ]
 
         for file in available_files:
             module_name = file.replace(".py", "")

@@ -48,7 +48,7 @@ class OwnerCommand(commands.Cog):
     @commands.hybrid_command()
     @commands.is_owner()
     async def wipe_commands(self, ctx: commands.Context[Nameless]):
-        """Wipes command list. Require a immediate restart after."""
+        """Wipe command list. Require a immediate restart."""
         await ctx.defer()
 
         for guild in ctx.bot.guilds:
@@ -58,7 +58,9 @@ class OwnerCommand(commands.Cog):
         ctx.bot.tree.clear_commands(guild=None)
         await ctx.bot.tree.sync(guild=None)
 
-        await ctx.send("Command cleaning done, you should restart me to update the new commands.")
+        await ctx.send(
+            "Command cleaning done, you should restart me to update the new commands."
+        )
 
 
 async def setup(bot: Nameless):
