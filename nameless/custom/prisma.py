@@ -1,6 +1,7 @@
 import logging
 
 import discord
+
 from prisma import Prisma, models
 
 __all__ = ["NamelessPrisma"]
@@ -26,9 +27,7 @@ class NamelessPrisma:
 
     @staticmethod
     async def get_guild_entry(guild: discord.Guild) -> models.Guild:
-        """
-        Create a Prisma Guild entry if not exists.
-        """
+        """Create a Prisma Guild entry if not exist."""
         return await _raw_db.guild.upsert(
             where={"Id": guild.id}, data={"create": {"Id": guild.id}, "update": {}}
         )

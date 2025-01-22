@@ -61,7 +61,7 @@ class Nameless(commands.Bot):
         nameless_config["nameless"]["start_time"] = datetime.now(timezone.utc)
 
     def start_bot(self, *, is_debug: bool = False):
-        """Starts the bot."""
+        """Start the bot."""
         logging.info(f"This bot will now start in {'debug' if is_debug else 'production'} mode.")
         self.run(os.getenv("TOKEN", ""), log_handler=None)
 
@@ -98,8 +98,7 @@ class Nameless(commands.Bot):
         )
 
     async def _register_commands(self):
-        """Registers all available commands."""
-
+        """Register all available commands."""
         logging.info("Registering commands.")
 
         # We get ones that end in .py, in `command` directory.

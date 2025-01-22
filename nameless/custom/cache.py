@@ -5,17 +5,14 @@ __all__ = ["nameless_cache"]
 
 
 class NamelessKeyCache:
-    """
-    A simple key-only cache, with internal logging and persitence support.
-    """
+    """A simple key-only cache, with internal logging and persitence support."""
 
     def __init__(self):
         self.cache: dict[str, bool] = {}
         self.cache_path: Path = Path(__file__).parent.parent.parent / "nameless.cache"
 
     def populate_from_persistence(self) -> None:
-        """Reading from cache persistence."""
-
+        """Read from cache persistence."""
         logging.info("Reading cache file.")
 
         self.cache_path.touch()
@@ -26,7 +23,6 @@ class NamelessKeyCache:
 
     def yank_to_persitence(self) -> None:
         """Write to cache persistence."""
-
         logging.info("Writing to cache file.")
 
         with open(self.cache_path, mode="w", encoding="utf-8") as f:

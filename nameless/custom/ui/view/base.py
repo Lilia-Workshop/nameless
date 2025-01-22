@@ -12,8 +12,8 @@ class BaseView(View, ABC):
         """
         Add multiple pages to the view.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         pages: Iterable[discord.Embed]
             An iterable of discord.Embed objects to add to the view.
         """
@@ -24,8 +24,8 @@ class BaseView(View, ABC):
         """
         Add a button to the view.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         button: BaseButton
             The button to add to the view.
         """
@@ -33,30 +33,22 @@ class BaseView(View, ABC):
 
     @abstractmethod
     async def next_page(self):
-        """
-        Go to the next page.
-        """
+        """Go to the next page."""
         pass
 
     @abstractmethod
     async def previous_page(self):
-        """
-        Go to the previous page.
-        """
+        """Go to the previous page."""
         pass
 
     @abstractmethod
     async def go_to_first_page(self):
-        """
-        Go to the first page.
-        """
+        """Go to the first page."""
         pass
 
     @abstractmethod
     async def go_to_last_page(self):
-        """
-        Go to the last page.
-        """
+        """Go to the last page."""
         pass
 
     @abstractmethod
@@ -64,8 +56,8 @@ class BaseView(View, ABC):
         """
         Go to a specific page.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         page: int
             The page number to go to.
         """
@@ -73,21 +65,18 @@ class BaseView(View, ABC):
 
     @abstractmethod
     async def end(self):
-        """
-        End the view.
-        """
+        """End the view."""
         pass
 
     @abstractmethod
     async def start(self) -> bool:
-        """
-        Start the view. This method should be called
-        after adding all the pages and buttons.
+        """Start the view.
 
+        This method should be called after adding all the pages and buttons.
         This method will be blocking and wait for the view to finish interacting.
 
-        Returns:
-        --------
+        Returns
+        -------
         bool:
             Return ``True`` if the view timed out, otherwise ``False``.
         """
