@@ -13,9 +13,6 @@ on:
 permissions:
   contents: write
 
-env:
-  UV_SYSTEM_PYTHON: 1
-
 jobs:
   python:
     runs-on: ubuntu-latest
@@ -42,22 +39,29 @@ jobs:
         run: |
           uv python install
 
+      - name: Activate virtualenv
+        run: |
+          # https://stackoverflow.com/a/74669486
+          uv venv
+          source .venv/bin/activate
+          echo PATH=$PATH >> $GITHUB_ENV
+
       - name: Install dependencies
         run: |
           uv sync --all-extras
 
       - name: Create Prisma client
         run: |
-          uvx prisma db push
+          prisma db push
 
       - name: Fix the code with ruff
         run: |
-          uvx ruff check --exit-zero .
-          uvx ruff format .
+          ruff check --exit-zero .
+          ruff format .
 
       - name: Type checking with BasedPyright
         run: |
-          uvx basedpyright
+          basedpyright
 
       - name: Push the formatted code if needed.
         uses: stefanzweifel/git-auto-commit-action@v5
