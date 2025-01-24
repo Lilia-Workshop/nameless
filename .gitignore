@@ -6,5 +6,6 @@
 
 # Files should not not be exposed to the public
 .env
+.python-version
 nameless.sqlite
 nameless.cache

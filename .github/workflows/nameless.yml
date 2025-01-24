@@ -25,18 +25,30 @@ jobs:
         with:
           token: ${{ secrets.PAT }}
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: ${{ matrix.python-version }}
-          cache: "pip"
-          cache-dependency-path: |
-            **/requirements*.txt
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Pin Python version for uv
+        run: |
+          uv python pin ${{ matrix.python-version }}
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: |
+          uv python install
+
+      - name: Activate virtualenv
+        run: |
+          # https://stackoverflow.com/a/74669486
+          uv venv
+          source .venv/bin/activate
+          echo PATH=$PATH >> $GITHUB_ENV
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt 
-          pip install -r requirements.dev.txt
+          uv sync --all-extras
 
       - name: Create Prisma client
         run: |
@@ -56,3 +68,7 @@ jobs:
         if: ${{ matrix.python-version == '3.13' }}
         with:
           commit_message: "[ci skip] Automated code format commit."
+
+      - name: Minimize uv cache
+        run: |
+          uv cache prune --ci
