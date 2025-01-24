@@ -1,6 +1,6 @@
 datasource nameless {
   provider = "sqlite"
-  url      = "file:../../nameless.sqlite"
+  url      = "file:nameless.sqlite"
 }
 
 generator client {
