@@ -25,34 +25,43 @@ jobs:
         with:
           token: ${{ secrets.PAT }}
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: ${{ matrix.python-version }}
-          cache: "pip"
-          cache-dependency-path: |
-            **/requirements*.txt
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Pin Python version for uv
+        run: |
+          uv python pin ${{ matrix.python-version }}
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: |
+          uv python install
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt 
-          pip install -r requirements.dev.txt
+          uv sync --all-extras --dev
 
       - name: Create Prisma client
         run: |
-          prisma db push
+          uvx prisma db push
 
       - name: Fix the code with ruff
         run: |
-          ruff check --exit-zero .
-          ruff format .
+          uvx ruff check --exit-zero .
+          uvx ruff format .
 
       - name: Type checking with BasedPyright
         run: |
-          basedpyright
+          uvx basedpyright
 
       - name: Push the formatted code if needed.
         uses: stefanzweifel/git-auto-commit-action@v5
         if: ${{ matrix.python-version == '3.13' }}
         with:
           commit_message: "[ci skip] Automated code format commit."
+
+      - name: Minimize uv cache
+        run: |
+          uv cache prune --ci
