@@ -1,5 +1,4 @@
 from pathlib import Path
-
 from tomllib import loads
 
 __all__ = ["nameless_config"]

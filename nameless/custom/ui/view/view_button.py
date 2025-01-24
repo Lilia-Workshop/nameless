@@ -1,8 +1,9 @@
 # pyright: reportUnknownParameterType=false, reportMissingParameterType=false, reportUnknownArgumentType=false, reportUnknownMemberType=false
+from typing import override
+
 import discord
 from discord import ui
 from discord.ui import Button
-from typing_extensions import override
 
 from nameless.custom.ui.view.base import BaseView
 

@@ -1,9 +1,9 @@
 import os
-from typing import Callable
+from collections.abc import Callable
+from typing import override
 
 import discord
 from discord import ui
-from typing_extensions import override
 
 __all__ = ["CustomDropdown"]
 
