@@ -1,7 +1,7 @@
 import logging
 import os
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Self, override
 
@@ -61,7 +61,7 @@ class Nameless(commands.Bot):
         logging.info("Logged in as %s (ID: %s)", str(self.user), self.user.id)
 
         logging.info("nameless* is now operational!")
-        nameless_config["nameless"]["start_time"] = datetime.now(timezone.utc)
+        nameless_config["nameless"]["start_time"] = datetime.now(UTC)
 
     @override
     async def on_command_error(
