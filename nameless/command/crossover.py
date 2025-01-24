@@ -4,13 +4,13 @@ import logging
 import discord
 import discord.ui
 from discord.ext import commands
+from prisma.models import CrossChatConnection, CrossChatMessage, CrossChatRoom
 
 from nameless import Nameless
 from nameless.custom.cache import nameless_cache
 from nameless.custom.prisma import NamelessPrisma
 from nameless.custom.types import NamelessTextable
 from nameless.utils import create_cache_key
-from prisma.models import CrossChatConnection, CrossChatMessage, CrossChatRoom
 
 __all__ = ["CrossOverCommand"]
 

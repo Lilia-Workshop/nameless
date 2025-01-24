@@ -1,7 +1,6 @@
 import logging
 
 import discord
-
 from prisma import Prisma, models
 
 __all__ = ["NamelessPrisma"]
