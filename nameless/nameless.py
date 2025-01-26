@@ -116,6 +116,9 @@ class Nameless(commands.Bot):
         """Register all available commands."""
         logging.info("Registering commands.")
 
+        # Add jishaku by default.
+        await self.load_extension("jishaku")
+
         # We get ones that end in .py, in `command` directory.
         # And ignore ones that starts with _ (underscore)
         current_path = Path(__file__).parent
