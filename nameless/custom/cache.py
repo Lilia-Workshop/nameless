@@ -15,9 +15,13 @@ class NamelessKeyCache:
         """Read from cache persistence."""
         logging.info("Reading cache file.")
 
-        self.cache_path.touch()
-        with open(self.cache_path, mode="r+", encoding="utf-8") as f:
-            lines = f.readlines()
+        # Create cold cache if needed.
+        if not self.cache_path.exists():
+            logging.warning("Cache does not exist, creating cold cache file.")
+            self.cache_path.touch(exist_ok=False)
+
+        with open(self.cache_path, encoding="utf-8") as f:
+            lines = f.read().splitlines()
             for line in lines:
                 self.cache[line] = True
 
@@ -31,17 +35,17 @@ class NamelessKeyCache:
 
     def set_key(self, key: str) -> None:
         """Flag a key to be exist."""
-        logging.warning("Cache key [%s] has been validated.", key)
+        logging.debug("Cache key [%s] has been validated.", key)
         self.cache[key] = True
 
     def get_key(self, key: str) -> bool:
         """Check if `key` exists in cache."""
-        logging.info("Cache key [%s] has been looked up.", key)
+        logging.debug("Cache key [%s] has been looked up.", key)
         return key in self.cache
 
     def invalidate_key(self, key: str) -> None:
         """Invalidate a key."""
-        logging.warning("Cache key [%s] has been invalidated.", key)
+        logging.debug("Cache key [%s] has been invalidated.", key)
         del self.cache[key]
 
 
