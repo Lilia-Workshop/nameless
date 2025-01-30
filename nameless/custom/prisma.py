@@ -28,7 +28,8 @@ class NamelessPrisma:
     async def get_guild_entry(guild: discord.Guild) -> models.Guild:
         """Create a Prisma Guild entry if not exist."""
         return await _raw_db.guild.upsert(
-            where={"Id": guild.id}, data={"create": {"Id": guild.id}, "update": {}}
+            where={"Id": guild.id},
+            data={"create": {"Id": guild.id, "HoneypotChannelId": 0}, "update": {}},
         )
 
     @staticmethod

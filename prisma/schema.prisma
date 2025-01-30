@@ -14,9 +14,10 @@ model User {
 }
 
 model Guild {
-  Id             BigInt                @id
-  HostedChats    CrossChatRoom[]
-  ConnectedChats CrossChatConnection[]
+  Id                BigInt                @id
+  HoneypotChannelId BigInt
+  HostedChats       CrossChatRoom[]
+  ConnectedChats    CrossChatConnection[]
 }
 
 model CrossChatRoom {

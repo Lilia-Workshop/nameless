@@ -99,6 +99,7 @@ class Nameless(commands.Bot):
         perms.connect = True
         perms.speak = True
         perms.use_voice_activation = True
+        perms.manage_channels = True
 
         return perms
 
