@@ -11,7 +11,6 @@ from discord.ext import commands
 
 from nameless.config import nameless_config
 from nameless.custom.cache import nameless_cache
-from nameless.custom.maimai import MaimaiClient
 from nameless.custom.prisma import NamelessPrisma
 
 __all__ = ["Nameless"]
@@ -39,8 +38,6 @@ class Nameless(commands.Bot):
             description=_description,
             **kwargs,
         )
-
-        self.maimai: MaimaiClient = MaimaiClient()
 
     @override
     async def setup_hook(self):

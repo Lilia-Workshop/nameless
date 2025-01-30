@@ -7,6 +7,7 @@ from prisma.models import User
 
 from nameless import Nameless
 from nameless.custom.cache import nameless_cache
+from nameless.custom.maimai.maimai import MaimaiClient
 from nameless.custom.maimai.models import MaimaiUser
 from nameless.custom.prisma import NamelessPrisma
 from nameless.utils import create_cache_key
@@ -17,6 +18,7 @@ __all__ = ["MaimaiCommand"]
 class MaimaiCommand(commands.Cog):
     def __init__(self, bot: Nameless):
         self.bot: Nameless = bot
+        self.moimoi_api: MaimaiClient = MaimaiClient()
 
     def _create_maimai_cache_key(self, user: discord.User | discord.Member) -> str:
         return create_cache_key("maimai", str(user.id))
@@ -34,7 +36,7 @@ class MaimaiCommand(commands.Cog):
 
         db_user = await NamelessPrisma.get_user_entry(ctx.author)
 
-        moi_user: MaimaiUser = ctx.bot.maimai.find_by_friend_code(
+        moi_user: MaimaiUser = self.moimoi_api.find_by_friend_code(
             db_user.MaimaiFriendCode
         )
 
@@ -58,7 +60,7 @@ class MaimaiCommand(commands.Cog):
         await ctx.defer()
 
         try:
-            ctx.bot.maimai.find_by_friend_code(friend_code)
+            self.moimoi_api.find_by_friend_code(friend_code)
             await NamelessPrisma.get_user_entry(ctx.author)
 
             await User.prisma().update_many(
