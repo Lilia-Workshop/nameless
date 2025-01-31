@@ -1,0 +1,7 @@
+[nameless]
+version = "2025.01.24"
+description = "Just a normal bot."
+support_server = ""
+
+[command]
+prefixes = ["n."]
