@@ -5,8 +5,10 @@ from discord import ui
 
 V = TypeVar("V", bound=type, covariant=True)
 
+__all__ = ["NamelessModalInput"]
 
-class CustomInput(ui.TextInput[ui.Modal], Generic[V]):
+
+class NamelessModalInput(ui.TextInput[ui.Modal], Generic[V]):
     def __init__(
         self, label: str, custom_id: str, default: str = "0", convert: V = str
     ):
