@@ -221,7 +221,7 @@ async def make(
     voice_client: wavelink.Player,
 ):
     if not any(filters.karaoke.payload):
-        filters.karaoke.set(level=0, mono_level=0, filter_band=0, filter_width=0)
+        filters.karaoke.reset()
 
     while True:
         view = KaraokeSettingView(ctx.author, message, filters)
