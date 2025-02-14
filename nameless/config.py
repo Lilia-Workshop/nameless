@@ -35,5 +35,4 @@ with open(_cfg_path, encoding="utf-8") as f:
     _content: str = f.read()
 
 # Maybe add a type checker here, using the annotation from the TypedDict
-raw_config = loads(_content)
-nameless_config: NamelessConfig = NamelessConfig(**raw_config)  # pyright: ignore[reportAny]
+nameless_config: NamelessConfig = NamelessConfig(**loads(_content))  # pyright: ignore[reportAny]
