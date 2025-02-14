@@ -13,7 +13,8 @@ from ..config import nameless_config
 from ..custom.player import CustomPlayer, TrackDropdown
 from ..custom.player.settings import sponsorblock_make
 from ..custom.player.settings.filters import filter_make
-from ..custom.player.settings.sponsorblock_settings import SponsorBlockSettings
+
+# from ..custom.player.settings.sponsorblock_settings import SponsorBlockSettings
 from ..custom.ui import ViewButton, ViewMenu
 from ..nameless import Nameless
 from .check import bot_in_voice
@@ -292,9 +293,9 @@ class MusicCommands(commands.GroupCog, name="music"):
                 await channel.connect(self_deaf=True, cls=CustomPlayer)
                 voice_client = cast(CustomPlayer, ctx.guild.voice_client)  # pyright: ignore[reportOptionalMemberAccess]
                 voice_client.trigger_channel_id = ctx.channel.id  # type: ignore
-                voice_client.sponsorblock_settings = (  # type: ignore
-                    await SponsorBlockSettings.get_from_database(ctx.guild)
-                )
+                # voice_client.sponsorblock_settings = (  # type: ignore
+                #     await SponsorBlockSettings.get_from_database(ctx.guild)
+                # )
                 await ctx.send(f"Connected to {channel.name}.")
             else:
                 await ctx.send("Failed to connect to the voice channel.")
@@ -679,23 +680,31 @@ class MusicCommands(commands.GroupCog, name="music"):
 
 async def setup(bot: Nameless):
     autostart_lavalink = False
+    autoupdate_lavalink = False
 
     for node in nameless_config["wavelinks"]:
-        if node.get("is_default", False) is True:
+        if node.get("auto_start", False) is True:
             autostart_lavalink = True
+            autoupdate_lavalink = node.get("auto_update", False)
             break
 
     if not autostart_lavalink and not nameless_config.get("wavelinks"):
         nameless_config["wavelinks"] = [
-            {"uri": "http://localhost:2333", "password": "youshallnotpass"}
+            {
+                "uri": "http://localhost:2333",
+                "password": "youshallnotpass",
+                "auto_start": True,
+                "auto_update": True,
+            }
         ]
         logging.warning("No Lavalink nodes found. Added a default node.")
         autostart_lavalink = True
+        autoupdate_lavalink = True
 
     if autostart_lavalink:
         from ..custom.player.lavalink import main as lavalink_main
 
-        await lavalink_main(bot.loop)
+        await lavalink_main(bot.loop, autoupdate_lavalink)
 
     await bot.add_cog(MusicCommands(bot))
     logging.info("%s cog added!", __name__)
@@ -703,7 +712,7 @@ async def setup(bot: Nameless):
 
 async def teardown(bot: Nameless):
     for node in nameless_config.get("wavelinks", {}):
-        if node.get("is_default", False) is True:
+        if node.get("auto_start", False) is True:
             from ..custom.player.lavalink import stop as lavalink_stop
 
             logging.warning("Stop default Lavalink node...")

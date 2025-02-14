@@ -24,8 +24,8 @@ class WavelinkNode(TypedDict):
     uri: str
     password: str
     region: NotRequired[str]
-    is_default: NotRequired[bool]
-    autostart: NotRequired[bool]
+    auto_start: NotRequired[bool]
+    auto_update: NotRequired[bool]
 
 
 class NamelessConfig(TypedDict):
